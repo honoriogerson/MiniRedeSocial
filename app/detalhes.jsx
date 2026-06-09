@@ -39,11 +39,8 @@ export default function Detalhes() {
         </Text>
 
       </Pressable>
-
     </View>
-
   )
-
 }
 
 const styles = StyleSheet.create({

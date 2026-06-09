@@ -7,11 +7,8 @@ import {
 
 //componente para exibir um post
 //recebe o post e a função onPress como props (propriedades)
-export default function PostCard({
-  post,
-  onPress
-}) {
-
+export default function PostCard({post,onPress}) 
+{
   return (
 
     <Pressable
@@ -24,16 +21,14 @@ export default function PostCard({
       </Text>
 
       <Text
-        numberOfLines={2}
+        numberOfLines={1}
         style={styles.texto}
       >
         {post.body}
       </Text>
 
     </Pressable>
-
   )
-
 }
 
 const styles = StyleSheet.create({
@@ -43,7 +38,8 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: 10,
     padding: 15,
-    marginBottom: 10
+    marginBottom: 10,
+    backgroundColor: 'lightgray'
   },
 
   titulo: {

@@ -1,9 +1,13 @@
+
+//activity indicator para mostrar um carregamento
+//enquanto os posts são buscados
 import {
   View,
   Text,
   FlatList,
   ActivityIndicator,
-  StyleSheet
+  StyleSheet, 
+  TextInput
 } from 'react-native'
 
 //importar a função para buscar os posts da api
@@ -17,28 +21,29 @@ import {
 import { router } from 'expo-router'
 
 //importar a função para buscar os posts da api
-import { buscarPosts }
-from '../src/services/api'
+import { buscarPosts }from '../src/services/api'
 
 //importar o componente para exibir um post
-import PostCard
-from '../src/components/PostCard'
+import PostCard from '../src/components/PostCard'
 
 export default function Home() {
 
+  //estado com quando abrimos a tela, os posts ainda não foram carregados
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [busca, setBusca] = useState('')
 
   async function carregarPosts() {
 
     try {
 
-      const dados =
-        await buscarPosts()
+      //service para buscar os posts da api
+      const dados = await buscarPosts()
 
       console.log(dados)
 
-      setPosts(dados)
+      //setPosts(dados)
+      setPosts(dados.slice(0, 20)) 
 
     } catch (error) {
 
@@ -46,6 +51,8 @@ export default function Home() {
 
     } finally {
 
+      //independente se deu certo ou deu erro, 
+      //o carregamento terminou
       setLoading(false)
 
     }
@@ -55,9 +62,7 @@ export default function Home() {
   useEffect(() => {carregarPosts()}, [])
 
   if (loading) {
-
     return (
-
       <View style={styles.loading}>
 
         <ActivityIndicator
@@ -69,14 +74,29 @@ export default function Home() {
         </Text>
 
       </View>
-
     )
-
   }
+  
+  //filtrar os posts pelo título, usando o estado de busca
+  const postsFiltrados = posts.filter(post =>
+    post.title.toLowerCase().includes(
+      busca.toLowerCase()
+    )
+  )
 
   return (
-
     <View style={styles.container}>
+
+      <Text style={styles.pesquisa}>
+              Pesquise por um post usando o título
+      </Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Pesquisar post..."
+        value={busca}
+        onChangeText={setBusca}
+      />
 
       <Text style={styles.titulo}>
         Mini Rede Social
@@ -86,11 +106,13 @@ export default function Home() {
         Total: {posts.length}
       </Text>
 
+      <Text style={styles.contador}>
+        Post Filtrados: {postsFiltrados.length}
+      </Text>
+
       <FlatList
-        data={posts}
-        keyExtractor={(item) =>
-          item.id.toString()
-        }
+        data={postsFiltrados}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
 
           <PostCard
@@ -105,7 +127,6 @@ export default function Home() {
               })
             }
           />
-
         )}
       />
 
@@ -135,9 +156,23 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
 
+  pesquisa: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10
+  },
+
   contador: {
     marginBottom: 20,
     fontSize: 16
-  }
+  }, 
+
+  input: {
+  borderWidth: 1,
+  borderColor: '#ccc',
+  padding: 12,
+  borderRadius: 10,
+  marginBottom: 15
+},
 
 })
